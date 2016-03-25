@@ -63,9 +63,9 @@ sub pattern_search{
 		my$reverse_pattern="AAGAAG";
 		while ($full_sequence =~ /$pattern/g){										# so we can search the pattern.
 			my$start=$-[0]+1;											# We have to adjust the start so we really have 6 position for nucleotids.
-			my$strand_type=1;											# For the normal pattern, we will have normal strand type.
 			foreach my$feature(@info){										# For each feature that we have
-				if (($feature->primary_tag eq 'exon')&&($feature->start <= $start)&&($feature->end >= $+[0])){	# if its an exon and the match is inside it
+				if (($feature->primary_tag eq 'exon')&&($feature->start <= $start)&&($feature->end >= $+[0])&&($feature->strand eq '1')){	# if its an exon and the match is inside it
+					my$strand_type=1;											# For the normal pattern, we will have normal strand type.
                                         my$pattern_match=Bio::SeqFeature::Generic->new( -seq_id => $gene,			# we make a new feature saving the match
                 	                        -source_tag => "Sebastian_Vieites_Ruibal_pattern_match_search_script",
         	                                -primary_tag => "PATTERN_MATCH",
@@ -82,9 +82,9 @@ sub pattern_search{
 		}
                 while ($full_sequence =~ /$reverse_pattern/g){									# We repeat the process, but with the reverse pattern
                         my$end=$+[0]-1;												# the adjust will be in the end (because its a reverse chain)
-                        my$strand_type=-1;											# and the strand type will be reverse.
                         foreach my$feature(@info){
-                                if (($feature->primary_tag eq 'exon')&&($feature->start <= $-[0])&&($feature->end >= $end)){
+                                if (($feature->primary_tag eq 'exon')&&($feature->start <= $-[0])&&($feature->end >= $end)&&($feature->strand eq '-1')){
+		                        my$strand_type=-1;											# and the strand type will be reverse.
                                         my$pattern_match=Bio::SeqFeature::Generic->new( -seq_id => $gene,
                                                 -source_tag => "Sebastian_Vieites_Ruibal_pattern_match_search_script",
                                                 -primary_tag => "PATTERN_MATCH",
