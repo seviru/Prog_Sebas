@@ -163,8 +163,10 @@ sub create_GFF3{
 			}
 		}
 	}
-	close LOCALFILE;	# We close both files.
+	close LOCALFILE;								# We close both files.
 	close GLOBALFILE;
+        `sort -u -o GFF_table_local_positions.gff GFF_table_local_positions.gff` ;	# and delete repeated lines in our files.	
+        `sort -u -o GFF_table_global_positions.gff GFF_table_global_positions.gff` ;
 }
 
 
