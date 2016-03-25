@@ -8,6 +8,9 @@ use LWP::Simple;
 
 # This is the third assignment script, where we learn how to use BioPerl.
 # Sebastian Vieites Ruibal.
+# I just wanted to leave constance that i thought about putting all subroutines inside a package and call them from there,
+# but realised that would be easier to correct the code if everything is inside the same file, instead of having to go
+# from one to the other, so thats the reason why all subroutines are written before the program core.
 
 ########################### SUBROUTINES ###############################
 
