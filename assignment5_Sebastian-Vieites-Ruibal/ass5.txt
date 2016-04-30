@@ -1,0 +1,108 @@
+# 1.How many protein records are in UniProt?
+PREFIX up:<http://purl.uniprot.org/core/>
+
+SELECT (COUNT (DISTINCT ?protein) AS ?number)
+WHERE {
+  ?protein a up:Protein
+}
+
+# 2.How many Arabidopsis thaliana protein records are in UniProt?
+PREFIX up:<http://purl.uniprot.org/core/>
+PREFIX taxon:<http://purl.uniprot.org/taxonomy/>
+
+SELECT (COUNT(DISTINCT ?protein) AS ?AraProtein)
+WHERE {
+  ?protein up:organism taxon:3702 .
+  ?protein a up:Protein
+}
+
+# 3.What is the description of the enzyme activity of UniProt Protein Q9SZZ8?
+PREFIX uniprotkb:<http://purl.uniprot.org/uniprot/>
+PREFIX up:<http://purl.uniprot.org/core/>
+PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?description
+WHERE {
+  uniprotkb:Q95ZZ8 up:replacedBy ?subject .
+  ?subject up:enzyme ?object .
+  ?object skos:prefLabel ?description
+}
+
+# 4.Retrieve the proteins ids, and date of submission, for proteins that have been added to UniProt this year.
+PREFIX up:<http://purl.uniprot.org/core/>
+
+SELECT ?protein ?date
+WHERE {
+ ?protein up:created ?date .
+ FILTER(?date > "2016-01-01"^^xsd:date)
+ ?protein a up:Protein .
+}
+
+# 5.How  many species are in the UniProt taxonomy?
+PREFIX up:<http://purl.uniprot.org/core/>
+
+SELECT (COUNT (DISTINCT ?species) AS ?number)
+WHERE {
+  ?species up:rank up:Species
+}
+
+# 6.How many species have at least one protein record?
+PREFIX up:<http://purl.uniprot.org/core/>
+
+SELECT (COUNT (DISTINCT ?species) AS ?number)
+WHERE {
+	SELECT ?species
+    	WHERE {
+		?species up:rank up:Species .
+		?protein a up:Protein .
+		?protein up:organism ?species
+	}
+	GROUP BY ?species
+	HAVING (COUNT (?protein) > 1)
+}
+
+# 7.What is the Affymetrix probe ID for the Arabiodopsis Apetala3 gene?
+PREFIX atlasterms: <http://rdf.ebi.ac.uk/terms/atlas/>
+PREFIX athal: <http://identifiers.org/tair.locus/>
+
+SELECT DISTINCT ?ID
+WHERE {
+	?ID atlasterms:dbXref athal:AT3G54340
+}
+
+# 8.Get the experimental description for all experiments where the Arabidopsis Apetala3 gene is DOWN regulated
+PREFIX atlasterms: <http://rdf.ebi.ac.uk/terms/atlas/>
+PREFIX athal: <http://identifiers.org/tair.locus/>
+
+SELECT ?experiments
+WHERE {
+ ?gene atlasterms:dbXref athal:AT3G54340 .
+ ?difexpratio atlasterms:isMeasurementOf ?gene .
+ ?difexpratio a atlasterms:DecreasedDifferentialExpressionRatio .
+ ?difexpanalysis atlasterms:hasExpressionValue ?difexpratio .
+ ?difexpanalysis a atlasterms:DifferentialExpressionAnalysis .
+ ?experiments atlasterms:hasAnalysis ?difexpanalysis .
+ ?experiments a atlasterms:Experiment
+}
+
+# 9.How many REACTOME pathways are assigned to Arabidopsis (taxon 3702)?
+PREFIX biopax3: <http://www.biopax.org/release/biopax-level3.owl#>
+PREFIX taxonomy: <http://identifiers.org/taxonomy/>
+
+SELECT (COUNT (DISTINCT ?reactome) AS ?number)
+WHERE {
+  ?reactome a biopax3:Pathway .
+  ?reactome biopax3:organism taxonomy:3702
+}
+
+# 10.Get all PubMed references for the pathway with the name “Degradation of the extracellular matrix”
+PREFIX biopax3: <http://www.biopax.org/release/biopax-level3.owl#>
+
+SELECT DISTINCT ?myrefs
+WHERE {
+	?pwd a biopax3:Pathway .
+	?pwd biopax3:displayName ?name .
+	?pwd biopax3:evidence ?evidence .
+	?evidence biopax3:xref ?myrefs .
+	FILTER (CONTAINS(?name, "Degradation of the extracellular matrix"))
+}
